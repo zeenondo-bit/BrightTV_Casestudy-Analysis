@@ -1,4 +1,5 @@
 -- Databricks notebook source
+
 ---This code is to check what my data looks like
 Select*
 From june_intake.bright_tv_casestudy.userprofiles
@@ -125,6 +126,7 @@ FROM june_intake.bright_tv_casestudy.userprofiles;
 
 ----------------------------------------------------------
 ---combining both tables together
+----------------------------------------------------------
 CREATE OR REPLACE TEMPORARY TABLE user_profiles AS (
 SELECT UserID,
     CASE
@@ -168,12 +170,10 @@ SELECT UserID,
         ELSE Gender
         END AS Gender,
 
-FROM june_intake.bright_tv_casestudy.userprofiles);
+FROM june_intake.bright_tv_casestudy.userprofiles),
 
-SELECT *
-FROM june_intake.bright_tv_casestudy.userprofiles;
 
-CREATE OR REPLACE TEMPORARY TABLE viewership AS (
+viewership AS (
 SELECT
     COALESCE(UserID0,userid4) AS userid,
     TO_CHAR(RecordDate2,'yyyyMM') AS month_id,
@@ -203,7 +203,7 @@ SELECT
         WHEN watch_time BETWEEN '17:00:00' AND '23:59:59' THEN '04.Evening'
         END AS time_of_day,
     
-    date_format(Duartion 2,'HH:mm:ss') AS duration,
+    date_format(`Duartion 2`,'HH:mm:ss') AS duration,
     CASE
         WHEN duration BETWEEN '00:05:00' AND '00:30:00' THEN '01.Low Usage:<30 min'
         WHEN duration BETWEEN '00:30:01' AND '00:59:59' THEN '02.Mid Usage:<60 min'
@@ -213,10 +213,7 @@ SELECT
 
     HOUR(RecordDate2)AS hour_of_day
 
-FROM june_intake.bright_tv_casestudy.viewership);
-
-SELECT *
-FROM viewership;
+FROM june_intake.bright_tv_casestudy.viewership),
 
 SELECT Coalesce(A.userid,B.userid) AS sub_id,
         month_id,
@@ -229,16 +226,16 @@ SELECT Coalesce(A.userid,B.userid) AS sub_id,
         time_of_day,
         hour_of_day,
         screen_time_bucket,
-        user_flag,
+        --user_flag,
         duration,
         Region,
-        Age_groups,
+        Age_group,
         Email_flag,
         SM_flag,
         Race,
         Gender,
 FROM viewership AS A
-LEFT JOIN userprofils AS B
+LEFT JOIN userprofiles AS B
 ON A.userid = B.userid;
 
 
